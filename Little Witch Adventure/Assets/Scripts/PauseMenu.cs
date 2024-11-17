@@ -1,15 +1,10 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    private bool isPaused = false;
+    public static bool isPaused = false;
     public GameObject pausePanel;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        pausePanel.SetActive(false);
-    }
 
     // Update is called once per frame
     void Update()
@@ -39,5 +34,12 @@ public class PauseMenu : MonoBehaviour
         Time.timeScale = 1;
         pausePanel.SetActive(false);
         isPaused = false;
+    }
+
+    public void MainMenu()
+    {
+        Time.timeScale = 1;
+        isPaused = false;
+        SceneManager.LoadScene("TitleScreen");
     }
 }

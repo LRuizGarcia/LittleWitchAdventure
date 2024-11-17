@@ -8,7 +8,6 @@ public class PlayerMovement : MonoBehaviour
     public SpriteRenderer spriteRenderer;
     public float playerSpeed;
     public float jumpForce;
-    private float input;
 
     //identify ground to allow jumping only when on the ground (not infinite jumping)
     public LayerMask groundLayer;
@@ -22,26 +21,39 @@ public class PlayerMovement : MonoBehaviour
     public float jumpTimeCounter;
     private bool isJumping;
 
+    private Animator playerAnimator;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        playerAnimator = GetComponent<Animator>();
     }
 
     // Update is called once per frame (variable, according to circumstances)
     void Update()
     {
+        
+    }
+
+    //updates 50 times per second, always
+    private void FixedUpdate()
+    {
         //update input value with input from user
-        input = Input.GetAxisRaw("Horizontal");
+        float input = Input.GetAxisRaw("Horizontal");
+
+        playerAnimator.SetFloat("speed", Mathf.Abs(input));
+
+        //calculate direction and speed according to input (X), Y velocity is not changed
+        playerRB.linearVelocity = new Vector2(input * playerSpeed, playerRB.linearVelocityY);
 
         //flip character if input = left
-        if(input < 0 && Time.timeScale != 0)
+        if (input < 0 && !PauseMenu.isPaused)
         {
             spriteRenderer.flipX = true;
         }
 
         //flip again if input = right
-        else if(input > 0 && Time.timeScale != 0)
+        else if (input > 0 && !PauseMenu.isPaused)
         {
             spriteRenderer.flipX = false;
         }
@@ -65,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //jump higher if the jump button is held longer
-        if(Input.GetButton("Jump") && isJumping == true)
+        if (Input.GetButton("Jump") && isJumping == true)
         {
             //check if we ran out of jump timer
             if (jumpTimeCounter > 0)
@@ -84,12 +96,5 @@ public class PlayerMovement : MonoBehaviour
         {
             isJumping = false;
         }
-    }
-
-    //updates 50 times per second, always
-    private void FixedUpdate()
-    {
-        //calculate direction and speed according to input (X), Y velocity is not changed
-        playerRB.linearVelocity = new Vector2(input * playerSpeed, playerRB.linearVelocityY); 
     }
 }
