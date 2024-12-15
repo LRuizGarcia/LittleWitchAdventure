@@ -7,6 +7,7 @@ TagManager:
   - Death
   - Enemy
   - Collectible
+  - Obstacle
   layers:
   - Default
   - TransparentFX

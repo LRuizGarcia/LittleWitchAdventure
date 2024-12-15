@@ -7,8 +7,8 @@ public class ShootSpitWithAnimation : MonoBehaviour
     //for synchronization of projectile and animation
     public void ShootSpit()
     {
-        Spit spit = GetComponentInParent<Spit>();
-        spit.ShootSpit();
+        FrogMovement frogMovement = GetComponentInParent<FrogMovement>();
+        frogMovement.ShootSpit();
     }
 
 }

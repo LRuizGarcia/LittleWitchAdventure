@@ -48,7 +48,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 100
   m_LinearDamping: 0
   m_AngularDamping: 0
   m_GravityScale: 1
@@ -304,9 +304,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyMaxHealth: 40
   healthSlider: {fileID: 7943949535171697649}
-  canDropLoot: 0
-  loot: {fileID: 0}
-  lootHeight: 0
+  canDropLoot: 1
+  loot: {fileID: 6208132199141559362, guid: 18fc0c097883d3b4980754c210961309, type: 3}
+  lootHeight: 0.5
 --- !u!114 &4000858218537746744
 MonoBehaviour:
   m_ObjectHideFlags: 0

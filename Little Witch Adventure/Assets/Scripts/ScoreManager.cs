@@ -28,9 +28,8 @@ public class ScoreManager : MonoBehaviour
         playerMovement.OnPlayerDeath += GameOver;
         playerMovement.OnLevelWin += LevelWin;
 
-        //highscore = PlayerPrefs.GetInt("highscore", 0);
 
-        currentLevel = SceneManager.GetActiveScene().buildIndex;
+        currentLevel = SceneManager.GetActiveScene().buildIndex - 1;
         highscore = GameController.gameController.highscore[currentLevel];
 
         scoreText.text = "SCORE: " + score.ToString();
@@ -47,13 +46,6 @@ public class ScoreManager : MonoBehaviour
     {
         score += 1;
         scoreText.text = "SCORE: " + score.ToString();
-
-        //if (score > highscore)
-        //{
-        //    //PlayerPrefs.SetInt("highscore", score);
-        //    newHighscore = score;
-            
-        //}
 
     }
 

@@ -1,6 +1,5 @@
 using System;
 using Unity.VisualScripting;
-using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.Windows;
 using Input = UnityEngine.Input;
@@ -146,7 +145,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FireIceShard()
     {
-        if (Time.time > nextFire && !dead) //if we can fire again
+        if (Time.time > nextFire && !dead && Time.timeScale != 0) //if we can fire again
         {
             nextFire = Time.time + fireRate; //next time you can fire is now + the rate of fire
             if (facingRight)

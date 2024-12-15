@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: a377bd2b332a9f94fb226788c81e195f
+guid: 63f38a8c590da4a46b3e063f9ddc613d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5673636518985711193
-    second: platform2_0
+      213: 3450238353611125962
+    second: The Midnight Background_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -51,7 +51,7 @@ TextureImporter:
   spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 128
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: platform2_0
+      name: The Midnight Background_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 1
-        width: 384
-        height: 255
+        y: 0
+        width: 256
+        height: 180
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 128, y: 0, z: 128, w: 128}
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7a14c2d65a13341b0800000000000000
-      internalID: -5673636518985711193
+      spriteID: ac47b61a085b1ef20800000000000000
+      internalID: 3450238353611125962
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: e11d3f4cab349aa469bce8ab99f7c05f
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      platform2_0: -5673636518985711193
+      The Midnight Background_0: 3450238353611125962
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

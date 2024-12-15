@@ -120,6 +120,7 @@ public class EnemyMovementController : MonoBehaviour
 
     void HandleDamageTaken()
     {
+        enemyRB.linearVelocity = Vector2.zero;
         if (enemyAnimator != null)
         {
             enemyAnimator.SetTrigger("takeDamage");

@@ -1,28 +1,40 @@
 fileFormatVersion: 2
-guid: ae2a1a2ddb361774a8253e51448c3c0e
+guid: ccdc816ff241ba3439ecf698968d40bf
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -1264772288087964892
-    second: healthBar_0
+      213: -600555776482988047
+    second: 9red_0
   - first:
-      213: -1246487339369159825
-    second: healthBar_1
+      213: 5611536712286790894
+    second: 9red_1
   - first:
-      213: -6581021228822345160
-    second: healthBar_2
+      213: -2559348827605573010
+    second: 9red_2
   - first:
-      213: 5235216049511467275
-    second: healthBar_3
+      213: 3854627288445687067
+    second: 9red_3
   - first:
-      213: -7552136332903361755
-    second: healthBar_4
+      213: -2225931500840828726
+    second: 9red_4
   - first:
-      213: -3237176403118713384
-    second: healthBar_5
+      213: 2702528579026114822
+    second: 9red_5
   - first:
-      213: -8378351623246559817
-    second: healthBar_6
+      213: -5883795355676024499
+    second: 9red_6
+  - first:
+      213: 8782970647322347545
+    second: 9red_7
+  - first:
+      213: 788320028600078551
+    second: 9red_8
+  - first:
+      213: -1401202964935643965
+    second: 9red_9
+  - first:
+      213: -998057751524284212
+    second: 9red_10
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -64,12 +76,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 16
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -118,12 +130,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: healthBar_0
+      name: 9red_0
       rect:
         serializedVersion: 2
-        x: 4
-        y: 2
-        width: 40
+        x: 0
+        y: 1067
+        width: 25
         height: 13
       alignment: 0
       pivot: {x: 0, y: 0}
@@ -133,20 +145,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 42342c61e40a27ee0800000000000000
-      internalID: -1264772288087964892
+      spriteID: 1ff2ce204b56aa7f0800000000000000
+      internalID: -600555776482988047
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: healthBar_1
+      name: 9red_1
       rect:
         serializedVersion: 2
-        x: 56
-        y: 5
-        width: 34
-        height: 7
+        x: 79
+        y: 1059
+        width: 46
+        height: 21
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -155,20 +167,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f6321e77e5693bee0800000000000000
-      internalID: -1246487339369159825
+      spriteID: ee4eaeb98ee20ed40800000000000000
+      internalID: 5611536712286790894
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: healthBar_2
+      name: 9red_2
       rect:
         serializedVersion: 2
-        x: 104
-        y: 5
-        width: 34
-        height: 7
+        x: 143
+        y: 999
+        width: 150
+        height: 81
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -177,20 +189,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 83a4db46f048ba4a0800000000000000
-      internalID: -6581021228822345160
+      spriteID: e62e1422dcd5b7cd0800000000000000
+      internalID: -2559348827605573010
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: healthBar_3
+      name: 9red_3
       rect:
         serializedVersion: 2
-        x: 152
-        y: 5
-        width: 34
-        height: 7
+        x: 311
+        y: 1075
+        width: 22
+        height: 5
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -199,20 +211,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b090e89724937a840800000000000000
-      internalID: 5235216049511467275
+      spriteID: b15155d98136e7530800000000000000
+      internalID: 3854627288445687067
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: healthBar_4
+      name: 9red_4
       rect:
         serializedVersion: 2
-        x: 200
-        y: 5
-        width: 34
-        height: 7
+        x: 347
+        y: 1075
+        width: 14
+        height: 5
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -221,20 +233,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 52359f5a40c613790800000000000000
-      internalID: -7552136332903361755
+      spriteID: ac0c70ee717eb11e0800000000000000
+      internalID: -2225931500840828726
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: healthBar_5
+      name: 9red_5
       rect:
         serializedVersion: 2
-        x: 248
-        y: 5
-        width: 34
-        height: 7
+        x: 371
+        y: 1051
+        width: 106
+        height: 29
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -243,20 +255,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8d515d0763d3313d0800000000000000
-      internalID: -3237176403118713384
+      spriteID: 609513c8c6f418520800000000000000
+      internalID: 2702528579026114822
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: healthBar_6
+      name: 9red_6
       rect:
         serializedVersion: 2
-        x: 296
-        y: 5
-        width: 34
-        height: 7
+        x: 491
+        y: 707
+        width: 814
+        height: 373
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -265,8 +277,96 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 7b5421dc69d1abb80800000000000000
-      internalID: -8378351623246559817
+      spriteID: d4166d53c4f885ea0800000000000000
+      internalID: -5883795355676024499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 9red_7
+      rect:
+        serializedVersion: 2
+        x: 1559
+        y: 983
+        width: 86
+        height: 97
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 918c452054163e970800000000000000
+      internalID: 8782970647322347545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 9red_8
+      rect:
+        serializedVersion: 2
+        x: 1863
+        y: 1071
+        width: 14
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d0980aa3eca0fa00800000000000000
+      internalID: 788320028600078551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 9red_9
+      rect:
+        serializedVersion: 2
+        x: 1899
+        y: 1071
+        width: 21
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3cc69c8c35ded8ce0800000000000000
+      internalID: -1401202964935643965
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: 9red_10
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 115
+        width: 1920
+        height: 246
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cc8e11f43cf2622f0800000000000000
+      internalID: -998057751524284212
       vertices: []
       indices: 
       edges: []
@@ -275,7 +375,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -285,13 +385,17 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      healthBar_0: -1264772288087964892
-      healthBar_1: -1246487339369159825
-      healthBar_2: -6581021228822345160
-      healthBar_3: 5235216049511467275
-      healthBar_4: -7552136332903361755
-      healthBar_5: -3237176403118713384
-      healthBar_6: -8378351623246559817
+      9red_0: -600555776482988047
+      9red_1: 5611536712286790894
+      9red_10: -998057751524284212
+      9red_2: -2559348827605573010
+      9red_3: 3854627288445687067
+      9red_4: -2225931500840828726
+      9red_5: 2702528579026114822
+      9red_6: -5883795355676024499
+      9red_7: 8782970647322347545
+      9red_8: 788320028600078551
+      9red_9: -1401202964935643965
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

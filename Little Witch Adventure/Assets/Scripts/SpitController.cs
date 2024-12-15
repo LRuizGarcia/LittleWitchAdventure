@@ -10,8 +10,10 @@ public class SpitController : MonoBehaviour
     void Start()
     {
         spitRB = GetComponent<Rigidbody2D>();
-        if(transform.localRotation.y != 0) //if spit has spawned rotated, frog is facing left
+
+        if (transform.position.x - transform.parent.position.x < 0) //if spit spawns to the left of the frog
         {
+            
             spitRB.AddForce(new Vector2(-1, 0) * speed, ForceMode2D.Impulse); //add force to the left
         }
         else
@@ -22,9 +24,4 @@ public class SpitController : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

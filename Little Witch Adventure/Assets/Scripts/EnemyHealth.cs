@@ -13,10 +13,6 @@ public class EnemyHealth : MonoBehaviour
 
     float currentHealth;
 
-
-
-    //EnemyMovementController enemyMovementController;
-
     //Loot drops
     public bool canDropLoot;
     public GameObject loot;
