@@ -36,22 +36,31 @@ public class EnemyHealth : MonoBehaviour
 
     public void AddDamage(float damage)
     {
-        healthSlider.gameObject.SetActive(true);
-        currentHealth -= damage;
-        healthSlider.value = currentHealth;
-        
-        OnDamageTaken?.Invoke(); //triggers OnDamageTaken event
-
-        if (currentHealth <= 0)
+        if (currentHealth > 0)
         {
-            MakeDead();
+            healthSlider.gameObject.SetActive(true);
+            currentHealth -= damage;
+            healthSlider.value = currentHealth;
+
+            OnDamageTaken?.Invoke(); //triggers OnDamageTaken event
+
+            if (currentHealth <= 0)
+            {
+                MakeDead();
+            }
         }
     }
 
     void MakeDead()
     {
-
         OnDeath?.Invoke(); //triggers OnDeath event
+
+        Collider2D[] colliders = GetComponents<Collider2D>();
+
+        foreach (Collider2D col in colliders)
+        {
+            col.enabled = false;
+        }
 
         if (canDropLoot)
         {

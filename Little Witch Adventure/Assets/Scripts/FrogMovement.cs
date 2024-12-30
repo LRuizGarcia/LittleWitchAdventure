@@ -14,6 +14,7 @@ public class FrogMovement : MonoBehaviour
     Animator frogAnimator;
 
     EnemyHealth enemyHealth;
+    Rigidbody2D enemyRB;
 
     bool playerInAttackZone = false;
 
@@ -24,6 +25,7 @@ public class FrogMovement : MonoBehaviour
         nextShootTime = 0f;
 
         enemyHealth = gameObject.GetComponentInChildren<EnemyHealth>();
+        enemyRB = GetComponent<Rigidbody2D>();
 
         //sub to events from enemyHealth
         enemyHealth.OnDamageTaken += HandleDamageTaken;
@@ -38,7 +40,7 @@ public class FrogMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (playerInAttackZone && Time.time >= nextShootTime) //if player is inside the zone
+        if (playerInAttackZone && Time.time >= nextShootTime && !enemyHealth.IsDead()) //if player is inside the zone
         {
             nextShootTime = Time.time + shootRate;
             frogAnimator.SetTrigger("spit");
@@ -76,15 +78,23 @@ public class FrogMovement : MonoBehaviour
 
     void Flip()
     {
-        float facingX = gameObject.transform.localScale.x; //find current localScale
-        facingX *= -1; //invert it
-        gameObject.transform.localScale = new Vector3(facingX, gameObject.transform.localScale.y, gameObject.transform.localScale.z); //update localScale
-        facingRight = !facingRight; //invert bool
+        if (!enemyHealth.IsDead())
+        {
+            float facingX = gameObject.transform.localScale.x; //find current localScale
+            facingX *= -1; //invert it
+            gameObject.transform.localScale = new Vector3(facingX, gameObject.transform.localScale.y, gameObject.transform.localScale.z); //update localScale
+            facingRight = !facingRight; //invert bool
+        }
     }
 
     public void ShootSpit()
     {
-        Instantiate(projectile, shootFrom.position, transform.rotation, transform);
+        GameObject spit = Instantiate(projectile, shootFrom.position, transform.rotation);
+        SpitController spitController = spit.GetComponent<SpitController>();
+        if (spitController != null)
+        {
+            spitController.SetDirection(facingRight ? 1 : -1); // Pass direction (+1 for right, -1 for left)
+        }
     }
 
     void HandleDamageTaken()
@@ -97,6 +107,7 @@ public class FrogMovement : MonoBehaviour
 
     void HandleDeath()
     {
+        enemyRB.gravityScale = 0;
         if (frogAnimator != null)
         {
             frogAnimator.SetTrigger("die");

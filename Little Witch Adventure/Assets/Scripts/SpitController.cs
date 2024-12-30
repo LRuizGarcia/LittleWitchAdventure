@@ -3,6 +3,7 @@ using UnityEngine;
 public class SpitController : MonoBehaviour
 {
     public float speed;
+    private int direction = 1;
 
     Rigidbody2D spitRB;
 
@@ -11,17 +12,20 @@ public class SpitController : MonoBehaviour
     {
         spitRB = GetComponent<Rigidbody2D>();
 
-        if (transform.position.x - transform.parent.position.x < 0) //if spit spawns to the left of the frog
-        {
-            
-            spitRB.AddForce(new Vector2(-1, 0) * speed, ForceMode2D.Impulse); //add force to the left
-        }
-        else
-        {
-            spitRB.AddForce(new Vector2(1, 0) * speed, ForceMode2D.Impulse);
-        }
+        spitRB.AddForce(new Vector2(direction, 0) * speed, ForceMode2D.Impulse);
 
+    }
 
+    public void SetDirection(int dir)
+    {
+        direction = dir;
+
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.flipX = (direction > 0); // Flips the sprite on the X-axis
+        }
     }
 
 }

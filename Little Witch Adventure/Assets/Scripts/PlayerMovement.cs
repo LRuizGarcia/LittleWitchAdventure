@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     bool facingRight;
     public float playerSpeed;
     public float jumpForce;
+    private float input;
 
     //identify ground to allow jumping only when on the ground (not infinite jumping)
     public LayerMask groundLayer;
@@ -23,9 +24,11 @@ public class PlayerMovement : MonoBehaviour
     //to make held jump longer, but not infinite
     public float jumpTime = 0.2f;
     public float jumpTimeCounter;
-    private bool isJumping;
+    private bool isJumping = false;
+    private bool jumpPressed = false;
 
     private Animator playerAnimator;
+    
 
     //for Attack
     public Transform magicOrigin;
@@ -53,7 +56,33 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame (variable, according to circumstances)
     void Update()
     {
-        //attack
+        // Flip
+        input = Input.GetAxisRaw("Horizontal");
+
+        if (input > 0 && !facingRight && !PauseMenu.isPaused && !dead)
+        {
+            Flip();
+        }
+        else if (input < 0 && facingRight && !PauseMenu.isPaused && !dead)
+        {
+            Flip();
+        }
+
+        // Running animation
+        playerAnimator.SetFloat("speed", Mathf.Abs(input));
+
+        // Jump
+        if (Input.GetButtonDown("Jump") && isGrounded && !dead)
+        {
+            jumpPressed = true;
+        }
+        
+        if (Input.GetButtonUp("Jump") && isJumping)
+        {
+            isJumping = false; 
+        }
+
+        // Attack
         if (Input.GetAxisRaw("Fire1") > 0 && !dead) //Fire1 = Left ctrl or Left Mouse Button
         {
             FireIceShard();
@@ -74,10 +103,6 @@ public class PlayerMovement : MonoBehaviour
             return; //block all movement during knockback
         }
 
-        //update input value with input from user
-        float input = Input.GetAxisRaw("Horizontal");
-
-        playerAnimator.SetFloat("speed", Mathf.Abs(input));
 
         //calculate direction and speed according to input (X), Y velocity is not changed
         if (!dead)
@@ -85,16 +110,6 @@ public class PlayerMovement : MonoBehaviour
             playerRB.linearVelocity = new Vector2(input * playerSpeed, playerRB.linearVelocityY);
         }
 
-        //flip character
-        if (input < 0 && facingRight && !PauseMenu.isPaused && !dead)
-        {
-            Flip();
-        }
-
-        else if (input > 0 && !facingRight && !PauseMenu.isPaused && !dead)
-        {
-            Flip();
-        }
 
         //jump
         //OverlapCircle will create circle
@@ -105,22 +120,24 @@ public class PlayerMovement : MonoBehaviour
 
         //check if player is on the ground and if the button to jump has been pressed
         //GetButtonDown = once per press
-        if (isGrounded && Input.GetButtonDown("Jump") && Time.timeScale != 0 && !dead)
+        if (isGrounded && jumpPressed && Time.timeScale != 0 && !dead)
         {
+            jumpPressed = false;
             isJumping = true;
             //for every new jump, the timer for long jump is initialized
             jumpTimeCounter = jumpTime;
             //actual jump
-            playerRB.linearVelocity = Vector2.up * jumpForce;
+            Vector2 jumpVelocity = new Vector2(input * playerSpeed, jumpForce);
+            playerRB.linearVelocity = jumpVelocity;
         }
 
         //jump higher if the jump button is held longer
-        if (Input.GetButton("Jump") && isJumping && !dead)
+        if (isJumping && !dead)
         {
             //check if we ran out of jump timer
             if (jumpTimeCounter > 0)
             {
-                playerRB.linearVelocity = Vector2.up * jumpForce;
+                playerRB.linearVelocity = new Vector2(playerRB.linearVelocity.x, jumpForce);
                 jumpTimeCounter -= Time.deltaTime;
             }
 
@@ -130,17 +147,16 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        if (Input.GetButtonUp("Jump"))
-        {
-            isJumping = false;
-        }
     }
     void Flip()
     {
-        facingRight = !facingRight;
-        Vector3 theScale = transform.localScale;
-        theScale.x *= -1;
-        transform.localScale = theScale;
+        if (!dead)
+        {
+            facingRight = !facingRight;
+            Vector3 theScale = transform.localScale;
+            theScale.x *= -1;
+            transform.localScale = theScale;
+        }
     }
 
     void FireIceShard()
@@ -164,20 +180,28 @@ public class PlayerMovement : MonoBehaviour
 
     public void KnockBack(Vector2 force)
     {
-        isKnockedBack = true;
-        knockbackTimer = knockbackDuration;
-        playerRB.AddForce(force, ForceMode2D.Impulse);
+        if (!dead)
+        {
+            isKnockedBack = true;
+            knockbackTimer = knockbackDuration;
+            playerRB.AddForce(force, ForceMode2D.Impulse);
+        }
     }
 
     public void TakeDamage()
     {
-        playerAnimator.SetTrigger("takeDamage");
+        if (!dead)
+        {
+            playerAnimator.SetTrigger("takeDamage");
+        }
     }
 
 
     public void Die()
     {
         playerRB.linearVelocity = Vector2.zero;
+        playerRB.gravityScale = 0;
+        GetComponent<Collider2D>().enabled = false;
         playerAnimator.SetTrigger("die");
         dead = true;
     }

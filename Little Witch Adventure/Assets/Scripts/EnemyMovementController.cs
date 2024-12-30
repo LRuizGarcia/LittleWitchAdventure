@@ -42,7 +42,7 @@ public class EnemyMovementController : MonoBehaviour
     void Update()
     {
         //Enemy random flip during idle        
-        if (Time.time > nextFlipChance)//If it's passed enough time
+        if (Time.time > nextFlipChance && !enemyHealth.IsDead())//If it's passed enough time
         {
 
             if (canFlip && Random.Range(0, 10) >= 5) Flip();//Random chance to flip (right now 50%)
@@ -111,10 +111,13 @@ public class EnemyMovementController : MonoBehaviour
 
     void Flip()
     {
-        float facingX = enemyGraphic.transform.localScale.x; //find current localScale
-        facingX *= -1; //invert it
-        enemyGraphic.transform.localScale = new Vector3(facingX, enemyGraphic.transform.localScale.y, enemyGraphic.transform.localScale.z); //update localScale
-        facingRight = !facingRight; //invert bool
+        if (!enemyHealth.IsDead())
+        {
+            float facingX = enemyGraphic.transform.localScale.x; //find current localScale
+            facingX *= -1; //invert it
+            enemyGraphic.transform.localScale = new Vector3(facingX, enemyGraphic.transform.localScale.y, enemyGraphic.transform.localScale.z); //update localScale
+            facingRight = !facingRight; //invert bool
+        }
     }
 
 
@@ -131,6 +134,7 @@ public class EnemyMovementController : MonoBehaviour
     void HandleDeath()
     {
         enemyRB.linearVelocity = Vector2.zero;
+        enemyRB.gravityScale = 0;
         if (enemyAnimator != null)
         {
             enemyAnimator.SetTrigger("die");

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 26a85060abbc9dc49bf2e21352aedccd
+guid: 9406cc6c497500d46998950d069cbc4b
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -7994372127985519814
-    second: RedBush_0
+      213: 912441935169420880
+    second: HingePlatformR_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: RedBush_0
+      name: HingePlatformR_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 132
-        height: 74
+        width: 49
+        height: 16
       alignment: 9
-      pivot: {x: 0.5, y: 0.75}
+      pivot: {x: 0.7, y: 0.3}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: a33b325d7e84e0190800000000000000
-      internalID: -7994372127985519814
+      spriteID: 05e71ff0b15a9ac00800000000000000
+      internalID: 912441935169420880
       vertices: []
       indices: 
       edges: []
@@ -125,7 +125,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 8bdd6b433bc5d7f4f9520d7cbc557cc7
+    spriteID: 622a52f41cef7a740add71a60a3be27c
     internalID: 0
     vertices: []
     indices: 
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      RedBush_0: -7994372127985519814
+      HingePlatformR_0: 912441935169420880
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

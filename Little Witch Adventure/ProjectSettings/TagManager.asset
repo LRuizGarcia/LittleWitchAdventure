@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Collectible
   - Obstacle
+  - Platform
   layers:
   - Default
   - TransparentFX
