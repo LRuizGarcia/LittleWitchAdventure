@@ -7,11 +7,11 @@ public class CameraFollow : MonoBehaviour
     public Vector3 offset;
     public float smoothSpeed = 0.9f;
 
-    float lowY; //the lowest point the camera will go (when character falls)
+    float lowY = 4.5f; //the lowest point the camera will go (when character falls)
 
     private void Start()
     {
-        lowY = transform.position.y; //lowest position is starting position
+        //lowY = transform.position.y; //lowest position is starting position
     }
 
     private void FixedUpdate()

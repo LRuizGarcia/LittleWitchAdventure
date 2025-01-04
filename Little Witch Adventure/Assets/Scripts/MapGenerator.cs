@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using NUnit.Framework;
 using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
     private int gridWidth = 100;
-    private int gridHeight = 20;
+    private int gridHeight = 12;
 
     private int[,][] grid;
 
@@ -13,12 +12,20 @@ public class MapGenerator : MonoBehaviour
     private int minPlatformWidth = 3;
     private int maxPlatformWidth = 7;
 
+    GameObject witch;
     private Vector2 witchSpawnPosition = Vector2.zero;
+    private Vector2 portalPosition = Vector2.zero;
+
+    private PlatformData firstPlatform;
+    private PlatformData finalPlatform;
+    private List<PlatformData> platforms;
+
 
     // Grid element IDs
     private const int EMPTY = 0;
     private const int REGULAR_PLATFORM = 1;
     private const int TALL_PLATFORM = 2;
+    private const int TALL_PLATFORM_BODY = 12;
     private const int HINGE_PLATFORM = 3;
     private const int MUSHROOM = 4;
     private const int SPIKY_BUSH = 5;
@@ -40,7 +47,7 @@ public class MapGenerator : MonoBehaviour
 
     private Dictionary<int, int> maxYForXWithShroom = new Dictionary<int, int>
     {
-        { 0, 6 },
+        { 0, 5 },
         { 1, 5 },
         { 2, 5 },
         { 3, 5 },
@@ -50,17 +57,42 @@ public class MapGenerator : MonoBehaviour
 
     void Start()
     {
+        witch = GameObject.FindWithTag("Player");
+
+        if (PlayerPrefs.HasKey("SavedGrid"))
+        {
+            LoadGridState();
+            witch.transform.position = LoadPlayerState();
+        }
+        else
+        {
+            GenerateNewLevel();
+        }
+
+    }
+
+    public void RestartLevel()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+    }
+
+    void GenerateNewLevel()
+    {
+        platforms = new List<PlatformData>();
+
         InitializeGrid();
-        CreateViablePath(); // Ensures a path from left to right
+        CreateViablePath();
         AddExplorationPlatforms();
         InstantiateGrid();
         DebugGrid();
         PlaceWitchOnFirstPlatform();
+        SaveGridState(); // Save grid for potential restarts
+        SavePlayerState(witchSpawnPosition);
     }
 
     void PlaceWitchOnFirstPlatform()
     {
-        GameObject witch = GameObject.FindWithTag("Player");
+        
         if (witch != null)
         {
             witch.transform.position = witchSpawnPosition;
@@ -107,7 +139,7 @@ public class MapGenerator : MonoBehaviour
         {
             grid[x, y][0] = element; // Place in primary slot
         }
-        else if (grid[x, y][1] == EMPTY)
+        else if (grid[x, y][0] != element && grid[x, y][1] == EMPTY)
         {
             grid[x, y][1] = element; // Place in secondary slot
         }
@@ -125,28 +157,38 @@ public class MapGenerator : MonoBehaviour
     void CreateViablePath()
     {
         int startX = 0;
-        int startY = Random.Range(0, gridHeight - 3);
+        int startY = Random.Range(0, gridHeight / 2);
 
         int platformWidth = Random.Range(minPlatformWidth, maxPlatformWidth + 1);
-        AddPlatform(startX, startY, platformWidth);
+
+        firstPlatform = new PlatformData(startX, startY, platformWidth);
+
+        AddPlatform(firstPlatform);        
 
         witchSpawnPosition = new Vector2(startX + 1, startY + 2);
 
-        RecursiveViablePath(startX + platformWidth - 1, startY);
+        //RecursiveViablePath(startX + platformWidth - 1, startY);
+
+        RecursiveViablePath(firstPlatform);
 
         Debug.Log("Viable Path Created.");
     }
 
-    void RecursiveViablePath(int lastX, int lastY)
+    void RecursiveViablePath(PlatformData lastPlatform)
     {
+        int lastX = lastPlatform.startX + lastPlatform.width - 1;
+        int lastY = lastPlatform.y;
+
         if (lastX > gridWidth - 7)
         {
-            /*AddElementToCell(lastX - 1, lastY + 1, PORTAL);
-            return;*/
+            //AddElementToCell(lastX - 1, lastY + 1, PORTAL);
+            //return;
 
             if (lastX - 1 >= 0 && lastY + 1 < gridHeight)
             {
                 AddElementToCell(lastX - 1, lastY + 1, PORTAL);
+                portalPosition = new Vector2(lastX - 1, lastY + 1);
+                finalPlatform = lastPlatform;
             }
             else
             {
@@ -165,11 +207,11 @@ public class MapGenerator : MonoBehaviour
             int startY = 0;
             bool shroom = false;
 
-            if(Random.value < 0.5f)
-            {                
-                verticalGap =  maxYForXWithShroom[horizontalGap];
+            if (Random.value < 0.5f)
+            {
+                verticalGap = maxYForXWithShroom[horizontalGap];
                 startY = lastY + verticalGap;
-                if(startY < gridHeight - 2)
+                if (startY < gridHeight - 2)
                 {
                     shroom = true;
                     AddElementToCell(lastX, lastY + 1, MUSHROOM);
@@ -178,13 +220,22 @@ public class MapGenerator : MonoBehaviour
 
             if (!shroom)
             {
-                verticalGap = Random.Range(-maxYForX[horizontalGap], maxYForX[horizontalGap] + 1);
+                //verticalGap = Random.Range(-maxYForX[horizontalGap], maxYForX[horizontalGap] + 1);
+
+                int jumpUpOrDown = Random.Range(0, 2) * 2 - 1; //gives 1 or -1
+                verticalGap = jumpUpOrDown * maxYForX[horizontalGap];
+
+
                 startY = lastY + verticalGap;
 
                 int safetyCounter = 0;
                 while ((horizontalGap + Mathf.Abs(verticalGap) < 3 || startY > gridHeight - 2 || startY < 0) && safetyCounter < 100)
                 {
-                    verticalGap = Random.Range(-maxYForX[horizontalGap], maxYForX[horizontalGap] + 1);
+                    //verticalGap = Random.Range(-maxYForX[horizontalGap], maxYForX[horizontalGap] + 1);
+
+                    jumpUpOrDown = Random.Range(0, 2) * 2 - 1; //gives 1 or -1
+                    verticalGap = jumpUpOrDown * maxYForX[horizontalGap];
+
                     startY = lastY + verticalGap;
                     safetyCounter++;
                 }
@@ -195,74 +246,95 @@ public class MapGenerator : MonoBehaviour
                     return;
                 }
             }
-            
+
 
             int platformWidth = Random.Range(minPlatformWidth, maxPlatformWidth + 1);
-            AddPlatform(startX, startY, platformWidth);
 
-            RecursiveViablePath(startX + platformWidth - 1, startY);
+            if (startX + platformWidth >= gridWidth)
+            {
+                platformWidth = gridWidth - startX;
+            }
+
+            PlatformData newPlatform = new PlatformData(startX, startY, platformWidth);
+
+            AddPlatform(newPlatform);
+
+            platforms.Add(newPlatform);
+
+            RecursiveViablePath(newPlatform);
 
         }
     }
-
-
-
-
-    void AddPlatform(int startX, int y, int length)
+  
+    void AddPlatform(PlatformData platform)
     {
         bool isTallPlatform = Random.value < 0.25f;
 
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < platform.width; i++)
         {
-            if (startX + i < gridWidth)
+            if (platform.startX + i < gridWidth)
             {
                 if (isTallPlatform)
                 {
-                    for (int j = y; j >= 0; j--)
+                    AddElementToCell(platform.startX + i, platform.y, TALL_PLATFORM);
+                    for (int j = platform.y - 1; j >= 0; j--)
                     {
-                        //if (grid[startX + i, j] != EMPTY) break; // Stop if colliding with another platform
-                        AddElementToCell(startX + i, j, TALL_PLATFORM);
+                        AddElementToCell(platform.startX + i, j, TALL_PLATFORM_BODY);
                     }
                 }
                 else
                 {
-                    AddElementToCell(startX + i, y, REGULAR_PLATFORM);
-                }                
+                    AddElementToCell(platform.startX + i, platform.y, REGULAR_PLATFORM);
+                }
             }
         }
     }
+
     void AddExplorationPlatforms()
     {
-        int numExplorationPlatforms = Random.Range(10, 20); // Number of exploratory platforms
+        int numExplorationPlatforms = 50; //Random.Range(20, 40); // Number of exploratory platforms
 
         for (int i = 0; i < numExplorationPlatforms; i++)
         {
             int startX = Random.Range(0, gridWidth);
             int startY = Random.Range(1, gridHeight - 1);
 
-            // Check if the platform would be too close to existing ones
-            if (PlatformNearby(startX, startY))
-                continue;
-
-            // Generate platform
             int platformWidth = Random.Range(minPlatformWidth, maxPlatformWidth + 1);
-            AddPlatform(startX, startY, platformWidth);
+
+            // Check if the platform is further on than the final portal
+            if (startX + platformWidth >= portalPosition.x)
+            {
+                platformWidth = (int)(portalPosition.x - startX);
+                if (platformWidth < minPlatformWidth) continue;
+            }
+
+            PlatformData newPlatform = new PlatformData(startX, startY, platformWidth);
+
+            // Check if the platform would be too close to existing ones
+            if (PlatformNearby(newPlatform)) continue;
+
+            // Check if the platform is reachable from other platforms
+            if (!IsPlatformReachable(newPlatform)) continue;
+
+            AddPlatform(newPlatform);
+            platforms.Add(newPlatform);
         }
     }
 
-    // Utility function to check if nearby platforms exist
-    bool PlatformNearby(int x, int y, int radius = 2)
+    bool PlatformNearby(PlatformData platform)
     {
-        for (int dx = -radius; dx <= radius; dx++)
+        int radius = 1;
+
+        for (int dx = -radius; dx <= radius + platform.width; dx++)
         {
             for (int dy = -radius; dy <= radius; dy++)
             {
-                int nx = x + dx;
-                int ny = y + dy;
+                int nx = platform.startX + dx;
+                int ny = platform.y + dy;
 
                 if (nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight)
                 {
-                    if (grid[nx, ny][0] != EMPTY || grid[nx, ny][1] != EMPTY)
+                    if (IsElementInCell(nx, ny, REGULAR_PLATFORM) || IsElementInCell(nx, ny, TALL_PLATFORM))
                         return true;
                 }
             }
@@ -270,9 +342,68 @@ public class MapGenerator : MonoBehaviour
         return false;
     }
 
+    bool IsPlatformReachable(PlatformData platform)
+    {
+        // Define the radius for checking reachability
+        int maxXDistance = 5; // Maximum horizontal and vertical check distance (accounts for mushrooms)
+        int maxYDistance = 5;
+        bool reachableWOExtraShroom = false;
+        bool reachableWExtraShroom = false;
+        int shroomX = 0;
+        int shroomY = 0;
+
+        for (int dx = -maxXDistance; dx <= maxXDistance + platform.width; dx++)
+        {
+            for (int dy = -maxYDistance; dy <= maxYDistance; dy++)
+            {
+                int neighborX = platform.startX + dx;
+                int neighborY = platform.y + dy;
+
+                // Ensure we stay within the grid bounds
+                if (neighborX >= 0 && neighborX < gridWidth && neighborY >= 0 && neighborY < gridHeight)
+                {
+                    // Check if the current neighbor cell contains a platform
+                    if (IsElementInCell(neighborX, neighborY, REGULAR_PLATFORM) || IsElementInCell(neighborX, neighborY, TALL_PLATFORM))
+                    {
+                        // Calculate distance to this neighboring platform
+                        int distanceX = Mathf.Abs(platform.startX - neighborX);
+                        int distanceY = Mathf.Abs(platform.y - neighborY);
+
+                        // Check normal jump constraints
+                        if (distanceX <= 4 && distanceY <= 2)
+                        {
+                            reachableWOExtraShroom = true;
+                        }
+
+                        // Check if there's a reachable lower platform with a mushroom
+                        else if (platform.y >= neighborY && IsElementInCell(neighborX, neighborY + 1, MUSHROOM))
+                        {
+                            if (distanceX <= 6 && distanceY <= maxYForXWithShroom[Mathf.Clamp(distanceX, 0, 5)])
+                            {
+                                reachableWOExtraShroom = true;
+                            }
+                        }
+
+                        // Check about adding mushroom to reach upper platform
+                        else if (platform.y <= neighborY && distanceX <= 6 && distanceY <= maxYForXWithShroom[Mathf.Clamp(distanceX, 0, 5)])
+                        {
+                            shroomX = platform.startX;
+                            shroomY = platform.y + 1;
+                            reachableWExtraShroom = true;
+                        }
+                    }
 
 
-    void InstantiateGrid()
+                }
+            }
+        }
+        // If it's NOT reachable without adding an extra mushroom, we add mushroom
+        if (!reachableWOExtraShroom && reachableWExtraShroom) AddElementToCell(shroomX, shroomY, MUSHROOM);
+
+        return reachableWOExtraShroom || reachableWExtraShroom;
+    }
+
+    public void InstantiateGrid()
     {
         for (int x = 0; x < gridWidth; x++)
         {
@@ -299,45 +430,80 @@ public class MapGenerator : MonoBehaviour
                 }
                 if (IsElementInCell(x, y, TALL_PLATFORM))
                 {
-                    // Tall platform instantiation
-                    bool isTop = (y + 1 >= gridHeight) || !IsElementInCell(x, y + 1, TALL_PLATFORM);// No platform above
-                    bool isLeftEdge = (x == 0) || !IsElementInCell(x - 1, y, TALL_PLATFORM);
-                    bool isRightEdge = (x == gridWidth - 1) || !IsElementInCell(x + 1, y, TALL_PLATFORM);
 
-                    if (isTop)
+                    bool isLeftEdge = (x == 0) || (!IsElementInCell(x - 1, y, TALL_PLATFORM) && !IsElementInCell(x - 1, y, TALL_PLATFORM_BODY));
+                    bool isRightEdge = (x == gridWidth - 1) || (!IsElementInCell(x + 1, y, TALL_PLATFORM) && !IsElementInCell(x + 1, y, TALL_PLATFORM_BODY));
+
+                    if (isLeftEdge)
                     {
-                        if (isLeftEdge)
-                        {
-                            Instantiate(Resources.Load("Prefabs/TallPlatform1"), new Vector3(x, y, 0), Quaternion.identity);
-                        }
-                        else if (isRightEdge)
-                        {
-                            Instantiate(Resources.Load("Prefabs/TallPlatform3"), new Vector3(x, y, 0), Quaternion.identity);
-                        }
-                        else
-                        {
-                            Instantiate(Resources.Load("Prefabs/TallPlatform2"), new Vector3(x, y, 0), Quaternion.identity);
-                        }
+                        Instantiate(Resources.Load("Prefabs/TallPlatform1"), new Vector3(x, y, 0), Quaternion.identity);
+                    }
+                    else if (isRightEdge)
+                    {
+                        Instantiate(Resources.Load("Prefabs/TallPlatform3"), new Vector3(x, y, 0), Quaternion.identity);
                     }
                     else
                     {
-                        if (isLeftEdge)
-                        {
-                            Instantiate(Resources.Load("Prefabs/TallPlatform4"), new Vector3(x, y, 0), Quaternion.identity);
-                        }
-                        else if (isRightEdge)
-                        {
-                            Instantiate(Resources.Load("Prefabs/TallPlatform6"), new Vector3(x, y, 0), Quaternion.identity);
-                        }
-                        else
-                        {
-                            Instantiate(Resources.Load("Prefabs/TallPlatform5"), new Vector3(x, y, 0), Quaternion.identity);
-                        }
+                        Instantiate(Resources.Load("Prefabs/TallPlatform2"), new Vector3(x, y, 0), Quaternion.identity);
+                    }
+
+                }
+                if (IsElementInCell(x, y, TALL_PLATFORM_BODY))
+                {
+                    bool isLeftEdge = (x == 0) || (!IsElementInCell(x - 1, y, TALL_PLATFORM) && !IsElementInCell(x - 1, y, TALL_PLATFORM_BODY));
+                    bool isLeftCorner = false;
+                    bool isRightEdge = (x == gridWidth - 1) || (!IsElementInCell(x + 1, y, TALL_PLATFORM) && !IsElementInCell(x + 1, y, TALL_PLATFORM_BODY));
+                    bool isRightCorner = false;
+                    if ((x > 0) && (x < gridWidth - 1))
+                    {
+                        isLeftCorner = IsElementInCell(x - 1, y, TALL_PLATFORM) && IsElementInCell(x + 1, y, TALL_PLATFORM_BODY);
+                        isRightCorner = IsElementInCell(x + 1, y, TALL_PLATFORM) && IsElementInCell(x - 1, y, TALL_PLATFORM_BODY);
+                    }
+
+                    if (isLeftCorner)
+                    {
+                        Instantiate(Resources.Load("Prefabs/TallPlatform7"), new Vector3(x, y, 0), Quaternion.identity);
+                    }
+                    else if (isRightCorner)
+                    {
+                        Instantiate(Resources.Load("Prefabs/TallPlatform8"), new Vector3(x, y, 0), Quaternion.identity);
+                    }
+                    else if (isLeftEdge)
+                    {
+                        Instantiate(Resources.Load("Prefabs/TallPlatform4"), new Vector3(x, y, 0), Quaternion.identity);
+                    }
+                    else if (isRightEdge)
+                    {
+                        Instantiate(Resources.Load("Prefabs/TallPlatform6"), new Vector3(x, y, 0), Quaternion.identity);
+                    }
+                    else
+                    {
+                        Instantiate(Resources.Load("Prefabs/TallPlatform5"), new Vector3(x, y, 0), Quaternion.identity);
                     }
                 }
                 if (IsElementInCell(x, y, MUSHROOM))
                 {
                     Instantiate(Resources.Load("Prefabs/BouncyShroom"), new Vector3(x, y, 0), Quaternion.identity);
+                }
+                if (IsElementInCell(x, y, SPIKY_BUSH))
+                {
+                    Instantiate(Resources.Load("Prefabs/SpikyBush"), new Vector3(x, y, 0), Quaternion.identity);
+                }
+                if (IsElementInCell(x, y, WOODEN_SPIKES))
+                {
+                    Instantiate(Resources.Load("Prefabs/WoodenSpikes"), new Vector3(x, y, 0), Quaternion.identity);
+                }
+                if (IsElementInCell(x, y, FROG))
+                {
+                    Instantiate(Resources.Load("Prefabs/ToxicFrog"), new Vector3(x, y, 0), Quaternion.identity);
+                }
+                if (IsElementInCell(x, y, WOLF))
+                {
+                    Instantiate(Resources.Load("Prefabs/SkullWolf"), new Vector3(x, y, 0), Quaternion.identity);
+                }
+                if (IsElementInCell(x, y, GEM))
+                {
+                    Instantiate(Resources.Load("Prefabs/BlueGem"), new Vector3(x, y, 0), Quaternion.identity);
                 }
                 if (IsElementInCell(x, y, PORTAL))
                 {
@@ -348,5 +514,76 @@ public class MapGenerator : MonoBehaviour
 
         Debug.Log("Grid instantiated.");
     }
+
+    string SerializeGrid()
+    {
+        System.Text.StringBuilder builder = new System.Text.StringBuilder();
+
+        for (int y = 0; y < gridHeight; y++)
+        {
+            for (int x = 0; x < gridWidth; x++)
+            {
+                builder.Append(grid[x, y][0] + ",");
+                builder.Append(grid[x, y][1] + ";"); // Save both slots
+            }
+            builder.AppendLine(); // Newline for readability
+        }
+
+        return builder.ToString();
+    }
+
+    void DeserializeGrid(string serializedGrid)
+    {
+        InitializeGrid();
+
+        string[] rows = serializedGrid.Split(new[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
+        for (int y = 0; y < gridHeight; y++)
+        {
+            string[] cells = rows[y].Split(';');
+            for (int x = 0; x < gridWidth; x++)
+            {
+
+                string[] slots = cells[x].Split(',');
+                grid[x, y][0] = int.Parse(slots[0]); // Primary slot
+                grid[x, y][1] = int.Parse(slots[1]); // Secondary slot
+            }
+        }
+    }
+
+    void SaveGridState()
+    {
+        string serializedGrid = SerializeGrid();
+        PlayerPrefs.SetString("SavedGrid", serializedGrid);
+        PlayerPrefs.Save(); // Ensure it persists
+    }
+
+    void LoadGridState()
+    {
+        if (PlayerPrefs.HasKey("SavedGrid"))
+        {
+            string serializedGrid = PlayerPrefs.GetString("SavedGrid");
+            DeserializeGrid(serializedGrid);
+            InstantiateGrid(); // Reinstantiate the saved level
+        }
+        else
+        {
+            Debug.LogError("No saved grid state found!");
+        }
+    }
+
+    void SavePlayerState(Vector2 position)
+    {
+        PlayerPrefs.SetFloat("PlayerX", position.x);
+        PlayerPrefs.SetFloat("PlayerY", position.y);
+        PlayerPrefs.Save();
+    }
+
+    Vector2 LoadPlayerState()
+    {
+        float x = PlayerPrefs.GetFloat("PlayerX", witchSpawnPosition.x); // Default to spawn
+        float y = PlayerPrefs.GetFloat("PlayerY", witchSpawnPosition.y);
+        return new Vector2(x, y);
+    }
+
 
 }

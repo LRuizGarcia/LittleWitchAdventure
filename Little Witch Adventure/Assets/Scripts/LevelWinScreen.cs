@@ -23,6 +23,7 @@ public class LevelWinScreen : MonoBehaviour
 
     public void MenuButton()
     {
+        PlayerPrefs.DeleteAll();
         SceneManager.LoadScene("TitleScreen");
     }
 
@@ -30,5 +31,18 @@ public class LevelWinScreen : MonoBehaviour
     {
         int currentLevel = SceneManager.GetActiveScene().buildIndex;
         SceneManager.LoadScene(currentLevel + 1);
+    }
+
+    public void RestartGeneratedLevelButton()
+    {
+        GameObject mapGeneratorGO = GameObject.Find("Map Generator");
+        MapGenerator mapGenerator = mapGeneratorGO.GetComponent<MapGenerator>();
+        mapGenerator.RestartLevel();
+    }
+
+    public void NewGeneratedLevel()
+    {
+        PlayerPrefs.DeleteAll();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

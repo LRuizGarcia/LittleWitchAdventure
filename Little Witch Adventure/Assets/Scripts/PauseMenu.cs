@@ -38,8 +38,14 @@ public class PauseMenu : MonoBehaviour
 
     public void MainMenu()
     {
+        PlayerPrefs.DeleteAll();
         Time.timeScale = 1;
         isPaused = false;
         SceneManager.LoadScene("TitleScreen");
+    }
+
+    public void DeletePlayerPrefs()
+    {
+        PlayerPrefs.DeleteAll();
     }
 }

@@ -20,6 +20,14 @@ public class GameOverScreen : MonoBehaviour
 
     public void MenuButton()
     {
+        PlayerPrefs.DeleteAll();
         SceneManager.LoadScene("TitleScreen");
+    }
+
+    public void RestartGeneratedLevelButton()
+    {
+        GameObject mapGeneratorGO = GameObject.Find("Map Generator");
+        MapGenerator mapGenerator = mapGeneratorGO.GetComponent<MapGenerator>();
+        mapGenerator.RestartLevel(); 
     }
 }

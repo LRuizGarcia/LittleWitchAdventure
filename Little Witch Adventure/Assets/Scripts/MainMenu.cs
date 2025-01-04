@@ -5,6 +5,11 @@ public class MainMenu : MonoBehaviour
 {
     public GameObject otherMenu;
 
+    private void Start()
+    {
+        PlayerPrefs.DeleteAll();
+    }
+
     public void ChangeMenu()
     {
         this.gameObject.SetActive(false);
@@ -24,5 +29,10 @@ public class MainMenu : MonoBehaviour
     public void Level2()
     {
         SceneManager.LoadScene("Level2");
+    }
+
+    public void GenerateLevel()
+    {
+        SceneManager.LoadScene("AutoLevel");
     }
 }
