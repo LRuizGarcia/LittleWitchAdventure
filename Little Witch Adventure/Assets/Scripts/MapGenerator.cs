@@ -342,15 +342,23 @@ public class MapGenerator : MonoBehaviour
         return false;
     }
 
+
     bool IsPlatformReachable(PlatformData platform)
     {
-        // Define the radius for checking reachability
-        int maxXDistance = 5; // Maximum horizontal and vertical check distance (accounts for mushrooms)
-        int maxYDistance = 5;
-        bool reachableWOExtraShroom = false;
-        bool reachableWExtraShroom = false;
+        int maxXDistance = 5; // Maximum horizontal distance for jumps with mushrooms
+        int maxYDistance = 5; // Maximum vertical distance for jumps with mushrooms
+
+        int minYSpacingAboveMushroom = 3; // Minimum vertical space required above a mushroom
+        bool reachableWithExtraShroom = false;
         int shroomX = 0;
         int shroomY = 0;
+
+        // Ensure no mushroom is right below platform
+        for (int i = platform.startX; i < platform.startX + platform.width; i++)
+        {
+            if (i > gridWidth) return false;
+            else if (platform.y > 0 && IsElementInCell(i, platform.y - 1, MUSHROOM)) return false;
+        }
 
         for (int dx = -maxXDistance; dx <= maxXDistance + platform.width; dx++)
         {
@@ -365,43 +373,46 @@ public class MapGenerator : MonoBehaviour
                     // Check if the current neighbor cell contains a platform
                     if (IsElementInCell(neighborX, neighborY, REGULAR_PLATFORM) || IsElementInCell(neighborX, neighborY, TALL_PLATFORM))
                     {
-                        // Calculate distance to this neighboring platform
                         int distanceX = Mathf.Abs(platform.startX - neighborX);
                         int distanceY = Mathf.Abs(platform.y - neighborY);
 
                         // Check normal jump constraints
                         if (distanceX <= 4 && distanceY <= 2)
                         {
-                            reachableWOExtraShroom = true;
+                              return true; // Platform is reachable directly
                         }
 
                         // Check if there's a reachable lower platform with a mushroom
                         else if (platform.y >= neighborY && IsElementInCell(neighborX, neighborY + 1, MUSHROOM))
                         {
-                            if (distanceX <= 6 && distanceY <= maxYForXWithShroom[Mathf.Clamp(distanceX, 0, 5)])
+                            if (distanceX <= 5 && distanceY <= maxYForXWithShroom[distanceX] &&
+                                distanceY >= minYSpacingAboveMushroom) // Ensure enough space above
                             {
-                                reachableWOExtraShroom = true;
+                                return true; // Reachable via existing mushroom
                             }
                         }
 
-                        // Check about adding mushroom to reach upper platform
-                        else if (platform.y <= neighborY && distanceX <= 6 && distanceY <= maxYForXWithShroom[Mathf.Clamp(distanceX, 0, 5)])
+                        // Check about adding a mushroom to reach an upper platform AS LAST RESORT
+                        else if (platform.y <= neighborY &&
+                                 distanceX <= 5 &&
+                                 distanceY <= maxYForXWithShroom[distanceX] &&
+                                 distanceY >= minYSpacingAboveMushroom)
                         {
                             shroomX = platform.startX;
                             shroomY = platform.y + 1;
-                            reachableWExtraShroom = true;
+
+
+                            reachableWithExtraShroom = true;
+
                         }
                     }
-
-
                 }
             }
         }
-        // If it's NOT reachable without adding an extra mushroom, we add mushroom
-        if (!reachableWOExtraShroom && reachableWExtraShroom) AddElementToCell(shroomX, shroomY, MUSHROOM);
-
-        return reachableWOExtraShroom || reachableWExtraShroom;
+        if (reachableWithExtraShroom) AddElementToCell(shroomX, shroomY, MUSHROOM);
+        return reachableWithExtraShroom; 
     }
+
 
     public void InstantiateGrid()
     {
