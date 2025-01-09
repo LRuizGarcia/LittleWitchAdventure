@@ -28,6 +28,9 @@ public class AudioManager : MonoBehaviour
 
     public void PlaySFX(AudioClip clip)
     {
+        if (clip == iceExplosion) SFXSource.volume = 0.3f;
+        else SFXSource.volume = 1f;
         SFXSource.PlayOneShot(clip);
+        
     }
 }
