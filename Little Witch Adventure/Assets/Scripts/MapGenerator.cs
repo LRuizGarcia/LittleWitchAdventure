@@ -19,6 +19,7 @@ public class MapGenerator : MonoBehaviour
     private PlatformData firstPlatform;
     private PlatformData finalPlatform;
     private List<PlatformData> platforms;
+    private List<Vector2> mushrooms;
 
 
     // Grid element IDs
@@ -59,35 +60,53 @@ public class MapGenerator : MonoBehaviour
     {
         witch = GameObject.FindWithTag("Player");
 
-        if (PlayerPrefs.HasKey("SavedGrid"))
+        if (GameController.gameController.currentGeneratedLevelSeed != "")
         {
-            LoadGridState();
-            witch.transform.position = LoadPlayerState();
+
+            GenerateNewLevel(int.Parse(GameController.gameController.currentGeneratedLevelSeed));
         }
         else
         {
-            GenerateNewLevel();
+;
+            int seed = GenerateRandomSeed();            
+            GenerateNewLevel(seed);
         }
 
     }
 
     public void RestartLevel()
     {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+        GameController.gameController.LoadGeneratedLevel(true);    
     }
 
-    void GenerateNewLevel()
+    public void GenerateNewLevel(int seed)
     {
         platforms = new List<PlatformData>();
+        mushrooms = new List<Vector2>();
+
+        SetSeed(seed);
 
         InitializeGrid();
         CreateViablePath();
         AddExplorationPlatforms();
+        PopulatePlatforms();
         InstantiateGrid();
         DebugGrid();
         PlaceWitchOnFirstPlatform();
         SaveGridState(); // Save grid for potential restarts
         SavePlayerState(witchSpawnPosition);
+    }
+
+    int GenerateRandomSeed()
+    {
+        return System.DateTime.Now.GetHashCode(); // Use the current time for randomness
+    }
+
+    void SetSeed(int seed)
+    {
+        Random.InitState(seed); // Set the seed for Unity's random number generator
+        Debug.Log($"Seed set to: {seed}");
+        GameController.gameController.StartGeneratedLevel(seed.ToString());
     }
 
     void PlaceWitchOnFirstPlatform()
@@ -138,20 +157,23 @@ public class MapGenerator : MonoBehaviour
         if (grid[x, y][0] == EMPTY)
         {
             grid[x, y][0] = element; // Place in primary slot
+            if (element == MUSHROOM) mushrooms.Add(new Vector2(x, y));
         }
         else if (grid[x, y][0] != element && grid[x, y][1] == EMPTY)
         {
             grid[x, y][1] = element; // Place in secondary slot
-        }
-        else
-        {
-            Debug.LogError($"Cell ({x}, {y}) already has two elements!");
+            if (element == MUSHROOM) mushrooms.Add(new Vector2(x, y));
         }
     }
 
     bool IsElementInCell(int x, int y, int element)
     {
         return (grid[x, y][0] == element || grid[x, y][1] == element);
+    }
+
+    bool IsCellEmpty(int x, int y)
+    {
+        return (grid[x, y][0] == EMPTY && grid[x, y][1] == EMPTY);
     }
 
     void CreateViablePath()
@@ -165,9 +187,7 @@ public class MapGenerator : MonoBehaviour
 
         AddPlatform(firstPlatform);        
 
-        witchSpawnPosition = new Vector2(startX + 1, startY + 2);
-
-        //RecursiveViablePath(startX + platformWidth - 1, startY);
+        witchSpawnPosition = new Vector2(startX + 1, startY + 1);
 
         RecursiveViablePath(firstPlatform);
 
@@ -181,18 +201,17 @@ public class MapGenerator : MonoBehaviour
 
         if (lastX > gridWidth - 7)
         {
-            //AddElementToCell(lastX - 1, lastY + 1, PORTAL);
-            //return;
 
             if (lastX - 1 >= 0 && lastY + 1 < gridHeight)
             {
                 AddElementToCell(lastX - 1, lastY + 1, PORTAL);
                 portalPosition = new Vector2(lastX - 1, lastY + 1);
+                platforms.RemoveAt(platforms.Count - 1);
                 finalPlatform = lastPlatform;
             }
             else
             {
-                Debug.LogError($"Failed to place portal: lastX={lastX}, lastY={lastY}");
+                Debug.Log($"Failed to place portal: lastX={lastX}, lastY={lastY}");
             }
             return;
 
@@ -220,8 +239,6 @@ public class MapGenerator : MonoBehaviour
 
             if (!shroom)
             {
-                //verticalGap = Random.Range(-maxYForX[horizontalGap], maxYForX[horizontalGap] + 1);
-
                 int jumpUpOrDown = Random.Range(0, 2) * 2 - 1; //gives 1 or -1
                 verticalGap = jumpUpOrDown * maxYForX[horizontalGap];
 
@@ -231,7 +248,6 @@ public class MapGenerator : MonoBehaviour
                 int safetyCounter = 0;
                 while ((horizontalGap + Mathf.Abs(verticalGap) < 3 || startY > gridHeight - 2 || startY < 0) && safetyCounter < 100)
                 {
-                    //verticalGap = Random.Range(-maxYForX[horizontalGap], maxYForX[horizontalGap] + 1);
 
                     jumpUpOrDown = Random.Range(0, 2) * 2 - 1; //gives 1 or -1
                     verticalGap = jumpUpOrDown * maxYForX[horizontalGap];
@@ -242,7 +258,7 @@ public class MapGenerator : MonoBehaviour
 
                 if (safetyCounter >= 100)
                 {
-                    Debug.LogError("Failed to find a valid verticalGap after 100 attempts. Exiting loop. Horizontal gap was " + horizontalGap);
+                    Debug.Log("Failed to find a valid verticalGap after 100 attempts. Exiting loop. Horizontal gap was " + horizontalGap);
                     return;
                 }
             }
@@ -292,7 +308,7 @@ public class MapGenerator : MonoBehaviour
 
     void AddExplorationPlatforms()
     {
-        int numExplorationPlatforms = 50; //Random.Range(20, 40); // Number of exploratory platforms
+        int numExplorationPlatforms = 50; // Number of exploratory platforms
 
         for (int i = 0; i < numExplorationPlatforms; i++)
         {
@@ -413,7 +429,155 @@ public class MapGenerator : MonoBehaviour
         return reachableWithExtraShroom; 
     }
 
+    void PopulatePlatforms()
+    {
+        // Starting Platform (where witch spawns)
+        for (int i = firstPlatform.startX + 3; i <= firstPlatform.startX + firstPlatform.width - 1; i = i + 2)
+        {
+            if (IsCellEmpty(i, firstPlatform.y + 1) && IsCellEmpty(i + 1, firstPlatform.y + 1)) {
+                AddElementToCell(i, firstPlatform.y + 1, GEM);
+            }
+        }
 
+        // Final Platform (where portal spawns)
+        for (int i = finalPlatform.startX + finalPlatform.width - 4; i >= finalPlatform.startX; i = i - 2)
+        {
+            AddElementToCell(i, finalPlatform.y + 1, GEM);
+        }
+
+        // Rest of platforms
+        foreach (PlatformData platform in platforms)
+        {
+            if (platform.width < 5)
+            {
+                float percentage = Random.value;
+                if (percentage < 0.35f)
+                {
+                    AddElementToCell(platform.startX + platform.width - 2, platform.y + 1, FROG);
+                }
+                else if (percentage < 0.60f)
+                {
+                    AddElementToCell(platform.startX + platform.width - 2, platform.y + 1, SPIKY_BUSH);
+                }
+                else if (percentage < 0.85f)
+                {
+                    AddElementToCell(platform.startX + platform.width - 2, platform.y + 1, WOODEN_SPIKES);
+                }
+                for (int i = platform.startX; i < platform.startX + platform.width; i = i + 2)
+                {
+                    if (IsCellEmpty(i, platform.y + 1) || 
+                        (IsElementInCell(i, platform.y + 1, TALL_PLATFORM_BODY) &&
+                        IsElementInCell(i, platform.y + 1, EMPTY))) 
+                    {
+                        AddElementToCell(i, platform.y + 1, GEM);
+                    }
+                }
+            }
+            if (platform.width >= 5 && platform.width < 7)
+            {
+                float percentage = Random.value;
+                int position = Random.Range(2, 4);
+                if (percentage < 0.25f)
+                {
+                    AddElementToCell(platform.startX + platform.width - position, platform.y + 1, WOLF);
+                }
+                else if (percentage < 0.35f)
+                {
+                    AddElementToCell(platform.startX + platform.width - position, platform.y + 1, FROG);
+                }
+                else if (percentage < 0.50f)
+                {
+                    AddElementToCell(platform.startX + platform.width - position, platform.y + 1, SPIKY_BUSH);
+                }
+                else if (percentage < 0.85f)
+                {
+                    AddElementToCell(platform.startX + platform.width - position, platform.y + 1, WOODEN_SPIKES);
+                }
+                position = Random.Range(0, 2);
+                for (int i = platform.startX + position; i < platform.startX + platform.width; i = i + 2)
+                {
+                    if (IsCellEmpty(i, platform.y + 1) ||
+                        (IsElementInCell(i, platform.y + 1, TALL_PLATFORM_BODY) &&
+                        IsElementInCell(i, platform.y + 1, EMPTY)))
+                    {
+                        AddElementToCell(i, platform.y + 1, GEM);
+                    }
+                }
+
+            }
+            if (platform.width >= 7)
+            {
+                float percentageL = Random.value;
+                float percentageR = Random.value;
+                int positionL = Random.Range(1, 3);
+                int positionR = Random.Range(2, 4);
+
+                if (percentageL < 0.25f)
+                {
+                    AddElementToCell(platform.startX + positionL, platform.y + 1, WOLF);
+                }
+                else if (percentageL < 0.35f)
+                {
+                    AddElementToCell(platform.startX + positionL, platform.y + 1, FROG);
+                }
+                else if (percentageL < 0.50f)
+                {
+                    AddElementToCell(platform.startX + positionL, platform.y + 1, SPIKY_BUSH);
+                }
+                else if (percentageL < 0.85f)
+                {
+                    AddElementToCell(platform.startX + positionL, platform.y + 1, WOODEN_SPIKES);
+                }
+
+
+                if (percentageR < 0.25f)
+                {
+                    AddElementToCell(platform.startX + platform.width - positionR, platform.y + 1, WOLF);
+                }
+                else if (percentageR < 0.35f)
+                {
+                    AddElementToCell(platform.startX + platform.width - positionR, platform.y + 1, FROG);
+                }
+                else if (percentageR < 0.50f)
+                {
+                    AddElementToCell(platform.startX + platform.width - positionR, platform.y + 1, SPIKY_BUSH);
+                }
+                else if (percentageR < 0.85f)
+                {
+                    AddElementToCell(platform.startX + platform.width - positionR, platform.y + 1, WOODEN_SPIKES);
+                }
+
+
+                positionL = Random.Range(0, 2);
+
+                for (int i = platform.startX + positionL; i < platform.startX + platform.width; i = i + 2)
+                {
+                    if (IsCellEmpty(i, platform.y + 1) ||
+                        (IsElementInCell(i, platform.y + 1, TALL_PLATFORM_BODY) &&
+                        IsElementInCell(i, platform.y + 1, EMPTY)))
+                    {
+                        AddElementToCell(i, platform.y + 1, GEM);
+                    }
+                }
+            }
+        }
+
+        foreach (Vector2 mushroomPosition in mushrooms)
+        {
+            int x = (int)mushroomPosition.x;
+            int gems = 0;
+
+            for(int y = (int)mushroomPosition.y + 2;
+                y < gridHeight && gems < 3 && (IsCellEmpty(x, y) ||
+                (IsElementInCell(x, y, TALL_PLATFORM_BODY) && IsElementInCell(x, y, EMPTY)));
+                y++)
+            {
+                AddElementToCell(x, y, GEM);
+                gems++;
+            }
+        }
+
+    }
     public void InstantiateGrid()
     {
         for (int x = 0; x < gridWidth; x++)
@@ -506,7 +670,7 @@ public class MapGenerator : MonoBehaviour
                 }
                 if (IsElementInCell(x, y, FROG))
                 {
-                    Instantiate(Resources.Load("Prefabs/ToxicFrog"), new Vector3(x, y, 0), Quaternion.identity);
+                    Instantiate(Resources.Load("Prefabs/ToxicFrog"), new Vector3(x, y, 0), Quaternion.Euler(0, 180, 0));
                 }
                 if (IsElementInCell(x, y, WOLF))
                 {

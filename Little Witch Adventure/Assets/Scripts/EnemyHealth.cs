@@ -18,7 +18,6 @@ public class EnemyHealth : MonoBehaviour
     public GameObject loot;
     public float lootHeight;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         currentHealth = enemyMaxHealth;
@@ -26,12 +25,6 @@ public class EnemyHealth : MonoBehaviour
         healthSlider.maxValue = enemyMaxHealth;
         healthSlider.value = currentHealth;
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void AddDamage(float damage)
@@ -51,6 +44,12 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
+    public void AddDamageFromStomp()
+    {
+        currentHealth = 0;
+        MakeDead();
+    }
+
     void MakeDead()
     {
         OnDeath?.Invoke(); //triggers OnDeath event
@@ -62,16 +61,22 @@ public class EnemyHealth : MonoBehaviour
             col.enabled = false;
         }
 
-        if (canDropLoot)
-        {
-            Vector3 dropPosition = new(transform.position.x, transform.position.y + lootHeight, 0);
-            Instantiate(loot, dropPosition, transform.rotation);
-        }
+        //if (canDropLoot)
+        //{
+        //    Vector3 dropPosition = new(transform.position.x, transform.position.y + lootHeight, 0);
+        //    Instantiate(loot, dropPosition, transform.rotation);
+        //}
 
     }
 
     public void OnDeathAnimationEnd()
     {
+        
+        if (canDropLoot)
+        {
+            Vector3 dropPosition = new(transform.position.x, transform.position.y + lootHeight, 0);
+            Instantiate(loot, dropPosition, transform.rotation);
+        }
         Destroy(transform.parent.gameObject);
     }
 

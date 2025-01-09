@@ -13,16 +13,18 @@ public class ScoreManager : MonoBehaviour
     public TMP_Text scoreText;
     public TMP_Text highscoreText;
 
-    int currentLevel;
-    int score = 0;
-    int highscore = 0;
+    private int currentLevel;
+    private int score = 0;
+    private int highscore = 0;
+    private int regularLevels = 2;
+
+    private bool isRegularLevel;
 
     private void Awake()
     {
         instance = this; //it creates a public instance of this object at the start of the game
     }
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         playerMovement.OnPlayerDeath += GameOver;
@@ -30,7 +32,12 @@ public class ScoreManager : MonoBehaviour
 
 
         currentLevel = SceneManager.GetActiveScene().buildIndex - 1;
-        highscore = GameController.gameController.highscore[currentLevel];
+
+        if (currentLevel >= 0 && currentLevel < regularLevels) isRegularLevel = true;
+        else isRegularLevel = false;
+
+        if (isRegularLevel) highscore = GameController.gameController.regularLevelHighscores[currentLevel];
+        else highscore = GameController.gameController.currentGeneratedLevelHighscore;
 
         scoreText.text = "SCORE: " + score.ToString();
         highscoreText.text = "HIGHSCORE: " + highscore.ToString();
@@ -40,6 +47,12 @@ public class ScoreManager : MonoBehaviour
     {
         playerMovement.OnPlayerDeath -= GameOver;
         playerMovement.OnLevelWin += LevelWin;
+    }
+
+    public void UpdateHighscore(int newHighscore)
+    {
+        highscore = newHighscore;
+        highscoreText.text = "HIGHSCORE: " + highscore.ToString();
     }
 
     public void AddPoint()
@@ -58,8 +71,13 @@ public class ScoreManager : MonoBehaviour
     {
         if (score > highscore)
         {
-            GameController.gameController.highscore[currentLevel] = score;
-            GameController.gameController.Save();
+            if (isRegularLevel) GameController.gameController.UpdateRegularLevelHighscore(currentLevel, score);
+            else
+            {
+                GameController.gameController.currentGeneratedLevelHighscore = score;
+                GameController.gameController.UpdateGeneratedLevelHighscore(
+                    GameController.gameController.currentGeneratedLevelSeed, score);
+            }
             levelWinScreen.SetUp(score, true); //if it's a new highscore, it will show a message
 
         }

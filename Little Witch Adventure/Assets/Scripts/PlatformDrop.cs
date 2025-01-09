@@ -6,9 +6,12 @@ public class PlatformDrop : MonoBehaviour
 
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+        if (!PauseMenu.isPaused)
         {
-            StartCoroutine(FallTimer());
+            if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                StartCoroutine(FallTimer());
+            }
         }
        
     }

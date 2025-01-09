@@ -7,7 +7,6 @@ public class SpitController : MonoBehaviour
 
     Rigidbody2D spitRB;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         spitRB = GetComponent<Rigidbody2D>();
@@ -24,7 +23,7 @@ public class SpitController : MonoBehaviour
 
         if (spriteRenderer != null)
         {
-            spriteRenderer.flipX = (direction > 0); // Flips the sprite on the X-axis
+            spriteRenderer.flipX = (direction > 0);
         }
     }
 

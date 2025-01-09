@@ -46,18 +46,24 @@ public class PlayerMovement : MonoBehaviour
     public event System.Action OnPlayerDeath;
     public event System.Action OnLevelWin;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    AudioManager audioManager;
+
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
+
     void Start()
     {
         playerAnimator = GetComponent<Animator>();
         facingRight = true;
     }
 
-    // Update is called once per frame (variable, according to circumstances)
     void Update()
     {
         // Flip
-        input = Input.GetAxisRaw("Horizontal");
+        if(!PauseMenu.isPaused) input = Input.GetAxisRaw("Horizontal");
 
         if (input > 0 && !facingRight && !PauseMenu.isPaused && !dead)
         {
@@ -72,7 +78,7 @@ public class PlayerMovement : MonoBehaviour
         playerAnimator.SetFloat("speed", Mathf.Abs(input));
 
         // Jump
-        if (Input.GetButtonDown("Jump") && isGrounded && !dead)
+        if (Input.GetButtonDown("Jump") && isGrounded && !PauseMenu.isPaused && !dead)
         {
             jumpPressed = true;
         }
@@ -83,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Attack
-        if (Input.GetAxisRaw("Fire1") > 0 && !dead) //Fire1 = Left ctrl or Left Mouse Button
+        if (Input.GetAxisRaw("Fire1") > 0 && !PauseMenu.isPaused && !dead) //Fire1 = Left ctrl or Left Mouse Button
         {
             FireIceShard();
         }
@@ -175,6 +181,7 @@ public class PlayerMovement : MonoBehaviour
                 //Create projectile in magicOrigin position facing left
                 Instantiate(iceShard, magicOrigin.position, Quaternion.Euler(new Vector3(0, 0, 180f)));
             }
+            audioManager.PlaySFX(audioManager.shoot);
         }
     }
 
@@ -186,6 +193,20 @@ public class PlayerMovement : MonoBehaviour
             knockbackTimer = knockbackDuration;
             playerRB.AddForce(force, ForceMode2D.Impulse);
         }
+    }
+
+    public bool IsStomping(Transform enemyTransform)
+    {
+        Vector2 enemyPosition = enemyTransform.position;
+        Vector2 playerPosition = transform.position;
+
+        // Player is above the enemy and moving downward
+        return playerPosition.y > enemyPosition.y && playerRB.linearVelocity.y < 0;
+    }
+
+    public void Bounce()
+    {
+        playerRB.linearVelocity = new Vector2(playerRB.linearVelocity.x, jumpForce);
     }
 
     public void TakeDamage()
@@ -228,7 +249,8 @@ public class PlayerMovement : MonoBehaviour
         if (other.CompareTag("Collectible"))
         {
             Destroy(other.gameObject);
-            ScoreManager.instance.AddPoint();            
+            ScoreManager.instance.AddPoint();
+            audioManager.PlaySFX(audioManager.gem);
         }
     }
 }

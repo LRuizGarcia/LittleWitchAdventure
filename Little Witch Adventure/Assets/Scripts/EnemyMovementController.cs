@@ -19,18 +19,39 @@ public class EnemyMovementController : MonoBehaviour
     float startAttackTime; //?
     bool isAttacking;
     Rigidbody2D enemyRB;
+    Collider2D wolfCollider;
     EnemyHealth enemyHealth;
+
+    void Awake()
+    {
+        enemyHealth = gameObject.GetComponentInChildren<EnemyHealth>();
+
+    }
+
 
     void Start()
     {
         enemyAnimator = GetComponentInChildren<Animator>();
         enemyRB = GetComponent<Rigidbody2D>();
-        enemyHealth = gameObject.GetComponentInChildren<EnemyHealth>();
 
         //sub to events from enemyHealth
         enemyHealth.OnDamageTaken += HandleDamageTaken;
         enemyHealth.OnDeath += HandleDeath;
 
+        wolfCollider = GetComponent<Collider2D>();
+        if (wolfCollider != null)
+        {
+            wolfCollider.enabled = false;
+            Invoke("EnableCollider", 2.0f); // Enable collider after 2 seconds
+        }
+    }
+
+    private void EnableCollider()
+    {
+        if (wolfCollider != null)
+        {
+            wolfCollider.enabled = true;
+        }
     }
 
     void OnDestroy()

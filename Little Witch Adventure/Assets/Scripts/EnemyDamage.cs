@@ -12,17 +12,10 @@ public class EnemyDamage : MonoBehaviour
     EnemyHealth enemyHealth;
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         nextDamage = 0f;
         enemyHealth = GetComponent<EnemyHealth>();
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
 
     }
 
@@ -34,7 +27,17 @@ public class EnemyDamage : MonoBehaviour
             {
                 if (!enemyHealth.IsDead()) //We only check health if it's an enemy. We don't want the enemy to keep afflicting damage when dying animation is happening
                 {
-                    DamageAndKnockback(other);
+                    PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
+
+                    // Check if the player is stomping on the enemy
+                    if (playerMovement != null && playerMovement.IsStomping(this.transform))
+                    {
+                        enemyHealth.AddDamageFromStomp();
+                        playerMovement.Bounce();
+                    }
+
+                    // If not, player takes damage on contact
+                    else DamageAndKnockback(other);
                 }
             }
             else if (gameObject.CompareTag("Obstacle")) //Obstacles don't have health, they always damage

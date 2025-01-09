@@ -9,6 +9,7 @@ TagManager:
   - Collectible
   - Obstacle
   - Platform
+  - Audio
   layers:
   - Default
   - TransparentFX

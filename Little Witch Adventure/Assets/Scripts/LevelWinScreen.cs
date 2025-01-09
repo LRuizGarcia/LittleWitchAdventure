@@ -43,6 +43,18 @@ public class LevelWinScreen : MonoBehaviour
     public void NewGeneratedLevel()
     {
         PlayerPrefs.DeleteAll();
+        GameController.gameController.ClearCurrentGeneratedLevelData();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void SaveMenuButton()
+    {
+        SaveMenu saveMenu = FindFirstObjectByType<SaveMenu>();
+
+        saveMenu.SetSourceMenu(SaveMenu.SaveMenuSource.WinScreen);
+        saveMenu.gameObject.SetActive(true);
+        saveMenu.SetSaveMenu(true);
+
+        gameObject.SetActive(false);
     }
 }

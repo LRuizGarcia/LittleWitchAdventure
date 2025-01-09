@@ -15,22 +15,43 @@ public class FrogMovement : MonoBehaviour
 
     EnemyHealth enemyHealth;
     Rigidbody2D enemyRB;
+    Collider2D frogCollider;
 
     bool playerInAttackZone = false;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Awake()
+    {
+        enemyHealth = gameObject.GetComponentInChildren<EnemyHealth>();
+
+    }
+
     void Start()
     {
         frogAnimator = GetComponentInChildren<Animator>();
         nextShootTime = 0f;
 
-        enemyHealth = gameObject.GetComponentInChildren<EnemyHealth>();
         enemyRB = GetComponent<Rigidbody2D>();
 
         //sub to events from enemyHealth
         enemyHealth.OnDamageTaken += HandleDamageTaken;
         enemyHealth.OnDeath += HandleDeath;
+        
+        frogCollider = GetComponent<Collider2D>();
+        if (frogCollider != null)
+        {
+            frogCollider.enabled = false;
+            Invoke("EnableCollider", 2.0f); // Enable collider after 2 seconds
+        }
     }
+
+    private void EnableCollider()
+    {
+        if (frogCollider != null)
+        {
+            frogCollider.enabled = true;
+        }
+    }
+
     void OnDestroy()
     {
         enemyHealth.OnDamageTaken -= HandleDamageTaken;
@@ -50,6 +71,7 @@ public class FrogMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        
         if (other.CompareTag("Player") && !enemyHealth.IsDead()) //if it is the player and enemy is not dead
         {
             if (facingRight && other.transform.position.x < transform.position.x) Flip(); //if facingRight but being approached from left, flip
