@@ -8,10 +8,17 @@ public class PauseMenu : MonoBehaviour
 
     private bool isSaveMenuOpen = false;
 
+    AudioManager audioManager;
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
+
     void Update()
     {
         if (Input.GetButtonDown("Pause") && !isSaveMenuOpen)
         {
+            
             if (isPaused)
             {
                 ResumeGame();
@@ -25,6 +32,7 @@ public class PauseMenu : MonoBehaviour
 
     public void PauseGame()
     {
+        audioManager.PlaySFX(audioManager.button);
         Time.timeScale = 0;
         pausePanel.SetActive(true);
         isPaused = true;
@@ -32,6 +40,7 @@ public class PauseMenu : MonoBehaviour
 
     public void ResumeGame()
     {
+        audioManager.PlaySFX(audioManager.button);
         Time.timeScale = 1;
         pausePanel.SetActive(false);
         isPaused = false;
@@ -39,6 +48,7 @@ public class PauseMenu : MonoBehaviour
 
     public void MainMenu()
     {
+        audioManager.PlaySFX(audioManager.button);
         PlayerPrefs.DeleteAll();
         Time.timeScale = 1;
         isPaused = false;
@@ -47,7 +57,7 @@ public class PauseMenu : MonoBehaviour
 
     public void SaveMenuButton()
     {
-
+        audioManager.PlaySFX(audioManager.button);
         SaveMenu saveMenu = FindFirstObjectByType<SaveMenu>();
 
         saveMenu.SetSourceMenu(SaveMenu.SaveMenuSource.PauseMenu);
@@ -60,6 +70,7 @@ public class PauseMenu : MonoBehaviour
 
     public void CloseSaveMenu()
     {
+        audioManager.PlaySFX(audioManager.button);
         pausePanel.SetActive(true);
         isSaveMenuOpen = false;
     }

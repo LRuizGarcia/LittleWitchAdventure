@@ -12,6 +12,13 @@ public class AudioManager : MonoBehaviour
     public AudioClip spit;
     public AudioClip wolf;
     public AudioClip shoot;
+    public AudioClip button;
+    public AudioClip death;
+    public AudioClip healthPickUp;
+    public AudioClip iceExplosion;
+    public AudioClip stomp;
+    public AudioClip portal;
+    public AudioClip enemyDeath;
 
     private void Start()
     {

@@ -20,6 +20,7 @@ public class MapGenerator : MonoBehaviour
     private PlatformData finalPlatform;
     private List<PlatformData> platforms;
     private List<Vector2> mushrooms;
+    private int gemCount = 0;
 
 
     // Grid element IDs
@@ -95,6 +96,7 @@ public class MapGenerator : MonoBehaviour
         PlaceWitchOnFirstPlatform();
         SaveGridState(); // Save grid for potential restarts
         SavePlayerState(witchSpawnPosition);
+
     }
 
     int GenerateRandomSeed()
@@ -158,11 +160,13 @@ public class MapGenerator : MonoBehaviour
         {
             grid[x, y][0] = element; // Place in primary slot
             if (element == MUSHROOM) mushrooms.Add(new Vector2(x, y));
+            else if (element == GEM) gemCount++;
         }
         else if (grid[x, y][0] != element && grid[x, y][1] == EMPTY)
         {
             grid[x, y][1] = element; // Place in secondary slot
             if (element == MUSHROOM) mushrooms.Add(new Vector2(x, y));
+            else if (element == GEM) gemCount++;
         }
     }
 
@@ -308,10 +312,12 @@ public class MapGenerator : MonoBehaviour
 
     void AddExplorationPlatforms()
     {
-        int numExplorationPlatforms = 50; // Number of exploratory platforms
+        int numExplorationPlatforms = Random.Range(25,36); // Number of exploratory platforms
+        int loopCounter = 0;
 
-        for (int i = 0; i < numExplorationPlatforms; i++)
+        while(numExplorationPlatforms > platforms.Count && loopCounter < 200)
         {
+            loopCounter++;
             int startX = Random.Range(0, gridWidth);
             int startY = Random.Range(1, gridHeight - 1);
 
@@ -334,7 +340,10 @@ public class MapGenerator : MonoBehaviour
 
             AddPlatform(newPlatform);
             platforms.Add(newPlatform);
+
+            
         }
+
     }
 
     bool PlatformNearby(PlatformData platform)
@@ -688,6 +697,11 @@ public class MapGenerator : MonoBehaviour
         }
 
         Debug.Log("Grid instantiated.");
+    }
+
+    public int getGemCount()
+    {
+        return gemCount;
     }
 
     string SerializeGrid()

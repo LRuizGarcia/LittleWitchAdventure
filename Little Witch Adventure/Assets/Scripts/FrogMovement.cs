@@ -102,12 +102,14 @@ public class FrogMovement : MonoBehaviour
     {
         if (!enemyHealth.IsDead())
         {
-            float facingX = gameObject.transform.localScale.x; //find current localScale
-            facingX *= -1; //invert it
-            gameObject.transform.localScale = new Vector3(facingX, gameObject.transform.localScale.y, gameObject.transform.localScale.z); //update localScale
-            facingRight = !facingRight; //invert bool
+            // Flip the rotation by modifying the Y axis of the parent GameObject
+            float newRotationY = transform.eulerAngles.y == 0 ? 180f : 0f;
+            transform.rotation = Quaternion.Euler(0f, newRotationY, 0f);
+
+            facingRight = !facingRight; // Invert bool
         }
     }
+
 
     public void ShootSpit()
     {

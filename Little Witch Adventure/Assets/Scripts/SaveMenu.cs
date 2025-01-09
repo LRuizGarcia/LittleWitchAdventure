@@ -29,6 +29,12 @@ public class SaveMenu : MonoBehaviour
 
     private SaveMenuSource sourceMenu;
 
+    AudioManager audioManager;
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
+
     void Start()
     {
         UpdateSlots();
@@ -48,7 +54,7 @@ public class SaveMenu : MonoBehaviour
     public void BackToPauseMenu()
     {
         saveMenu.SetActive(false);
-
+        audioManager.PlaySFX(audioManager.button);
         switch (sourceMenu)
         {
             case SaveMenuSource.PauseMenu:
@@ -77,7 +83,7 @@ public class SaveMenu : MonoBehaviour
     public void SaveIntoSlot(int slotIndex)
     {
         Debug.Log($"Selecting save slot {slotIndex}");
-
+        audioManager.PlaySFX(audioManager.button);
         selectedSlot = slotIndex;
 
         // Check if the slot is empty
@@ -100,12 +106,13 @@ public class SaveMenu : MonoBehaviour
 
     public void CancelNameInput()
     {
+        audioManager.PlaySFX(audioManager.button);
         nameInputMenu.SetActive(false);
     }
 
     public void ConfirmSave()
     {
-
+        audioManager.PlaySFX(audioManager.button);
         string saveName = nameInputMenu.GetComponentInChildren<TMP_InputField>().text;
 
         // If name is empty
@@ -127,11 +134,13 @@ public class SaveMenu : MonoBehaviour
 
     private void ShowOverwriteConfirmation()
     {
+        audioManager.PlaySFX(audioManager.button);
         overwriteMenu.SetActive(true);
     }
 
     public void ConfirmOverwrite()
     {
+        audioManager.PlaySFX(audioManager.button);
         // Show the name input field to rename if desired
         nameInputMenu.GetComponentInChildren<TMP_InputField>().text = GameController.gameController.saveSlots[selectedSlot].name; // Populate with current name
         nameInputMenu.SetActive(true);
@@ -141,6 +150,7 @@ public class SaveMenu : MonoBehaviour
 
     public void CancelOverwrite()
     {
+        audioManager.PlaySFX(audioManager.button);
         // Cancel the overwrite action
         overwriteMenu.SetActive(false);
         selectedSlot = -1;

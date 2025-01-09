@@ -11,6 +11,12 @@ public class EnemyDamage : MonoBehaviour
 
     EnemyHealth enemyHealth;
 
+    AudioManager audioManager;
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
 
     void Start()
     {
@@ -37,12 +43,22 @@ public class EnemyDamage : MonoBehaviour
                     }
 
                     // If not, player takes damage on contact
-                    else DamageAndKnockback(other);
+                    else
+                    {
+                        DamageAndKnockback(other);
+                        audioManager.PlaySFX(audioManager.wolf);
+                    }
                 }
             }
             else if (gameObject.CompareTag("Obstacle")) //Obstacles don't have health, they always damage
             {
                 DamageAndKnockback(other);
+                audioManager.PlaySFX(audioManager.bush);
+            }
+            else if (gameObject.CompareTag("Projectile"))
+            {
+                DamageAndKnockback(other);
+                audioManager.PlaySFX(audioManager.spit);
             }
         }
     }

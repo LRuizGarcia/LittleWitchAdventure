@@ -1,7 +1,5 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
 
 public class LoadMenu : MonoBehaviour
 {
@@ -11,6 +9,12 @@ public class LoadMenu : MonoBehaviour
     public TMP_Text slot3;
 
     public GameObject emptySlotMessage;
+
+    AudioManager audioManager;
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
 
     void Start()
     {
@@ -28,6 +32,9 @@ public class LoadMenu : MonoBehaviour
 
     public void LoadFromSlot(int slotIndex)
     {
+
+        audioManager.PlaySFX(audioManager.button);
+
         Debug.Log($"Loading from slot {slotIndex}");
 
         SeedSlot saveSlot = GameController.gameController.saveSlots[slotIndex];
@@ -40,34 +47,12 @@ public class LoadMenu : MonoBehaviour
             return;
         }
 
-        // Store the seed temporarily
+
         GameController.gameController.currentGeneratedLevelSeed = saveSlot.seed;
 
-        // Load the AutoLevel scene
-        //SceneManager.sceneLoaded += OnSceneLoaded;
-        //SceneManager.LoadScene("AutoLevel");
-
-        //GameController.gameController.LoadFromSeed(saveSlot.seed);
         GameController.gameController.LoadGeneratedLevel(false);
 
     }
-    /*
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == "AutoLevel")
-        {
-            // Retrieve and apply the seed to the MapGenerator
-            string seed = GameController.gameController.currentGeneratedLevelSeed;
-            if (!string.IsNullOrEmpty(seed))
-            {
-                //GameController.gameController.LoadFromSeed(seed);
-                GameController.gameController.LoadFromSeed(false);
-            }
-
-            // Unsubscribe from the event to prevent multiple calls
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-        }
-    }*/
 
     private void ShowEmptySlotMessage()
     {
@@ -76,6 +61,7 @@ public class LoadMenu : MonoBehaviour
 
     public void CloseEmptySlotMessage()
     {
+        audioManager.PlaySFX(audioManager.button);
         emptySlotMessage.SetActive(false);
     }
 

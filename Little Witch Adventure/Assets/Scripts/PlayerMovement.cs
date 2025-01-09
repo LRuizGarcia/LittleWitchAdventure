@@ -1,7 +1,4 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Windows;
 using Input = UnityEngine.Input;
 
 public class PlayerMovement : MonoBehaviour
@@ -47,7 +44,6 @@ public class PlayerMovement : MonoBehaviour
     public event System.Action OnLevelWin;
 
     AudioManager audioManager;
-
 
     private void Awake()
     {
@@ -206,6 +202,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Bounce()
     {
+        audioManager.PlaySFX(audioManager.stomp);
         playerRB.linearVelocity = new Vector2(playerRB.linearVelocity.x, jumpForce);
     }
 
@@ -220,6 +217,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void Die()
     {
+        audioManager.PlaySFX(audioManager.death);
         playerRB.linearVelocity = Vector2.zero;
         playerRB.gravityScale = 0;
         GetComponent<Collider2D>().enabled = false;

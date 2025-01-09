@@ -130,14 +130,16 @@ public class EnemyMovementController : MonoBehaviour
         }
     }
 
+
     void Flip()
     {
         if (!enemyHealth.IsDead())
         {
-            float facingX = enemyGraphic.transform.localScale.x; //find current localScale
-            facingX *= -1; //invert it
-            enemyGraphic.transform.localScale = new Vector3(facingX, enemyGraphic.transform.localScale.y, enemyGraphic.transform.localScale.z); //update localScale
-            facingRight = !facingRight; //invert bool
+            // Flip the rotation by modifying the Y axis of the parent GameObject
+            float newRotationY = transform.eulerAngles.y == 0 ? 180f : 0f;
+            transform.rotation = Quaternion.Euler(0f, newRotationY, 0f);
+
+            facingRight = !facingRight; // Invert bool
         }
     }
 

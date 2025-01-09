@@ -7,8 +7,6 @@ public class ProjectileController : MonoBehaviour
 
     public float projectileSpeed;
 
-
-
     // Start is when everything starts
     // Awake is when this option first comes to life
     void Awake()
@@ -25,11 +23,6 @@ public class ProjectileController : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     //Stops the projectile
     public void RemoveForce()

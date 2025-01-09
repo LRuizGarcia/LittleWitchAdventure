@@ -2225,7 +2225,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.75
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -4705,6 +4705,13 @@ MonoBehaviour:
   spit: {fileID: 8300000, guid: ffb159a21c8a04135a5616979c828fab, type: 3}
   wolf: {fileID: 8300000, guid: 7e9ee6dc04a5d40d1a5dfc4beb9865e7, type: 3}
   shoot: {fileID: 8300000, guid: d46323e22e74e46baa241cbf48c85671, type: 3}
+  button: {fileID: 8300000, guid: c8468f2a2b2b58a4dae79102923257ea, type: 3}
+  death: {fileID: 8300000, guid: b634d3c33289dfc48b0e7f9fe92bfaa4, type: 3}
+  healthPickUp: {fileID: 8300000, guid: fa6f9b4626d30a84ebc88797f6124fbb, type: 3}
+  iceExplosion: {fileID: 8300000, guid: cf63a80b93ab25c4b8917755ba6e72b4, type: 3}
+  stomp: {fileID: 8300000, guid: 590b15e69bcd7f24eaa3ded1f4a343d9, type: 3}
+  portal: {fileID: 8300000, guid: 06500916e1414fa479b18ddcd5c931c0, type: 3}
+  enemyDeath: {fileID: 8300000, guid: cffab2d227894a142afae41370c8d4e4, type: 3}
 --- !u!4 &974346378
 Transform:
   m_ObjectHideFlags: 0

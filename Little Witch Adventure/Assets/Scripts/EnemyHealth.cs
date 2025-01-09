@@ -18,6 +18,13 @@ public class EnemyHealth : MonoBehaviour
     public GameObject loot;
     public float lootHeight;
 
+    AudioManager audioManager;
+
+    private void Awake()
+    {
+        audioManager = GameObject.FindGameObjectWithTag("Audio").GetComponent<AudioManager>();
+    }
+
     void Start()
     {
         currentHealth = enemyMaxHealth;
@@ -52,6 +59,7 @@ public class EnemyHealth : MonoBehaviour
 
     void MakeDead()
     {
+        audioManager.PlaySFX(audioManager.enemyDeath);
         OnDeath?.Invoke(); //triggers OnDeath event
 
         Collider2D[] colliders = GetComponents<Collider2D>();
@@ -60,12 +68,6 @@ public class EnemyHealth : MonoBehaviour
         {
             col.enabled = false;
         }
-
-        //if (canDropLoot)
-        //{
-        //    Vector3 dropPosition = new(transform.position.x, transform.position.y + lootHeight, 0);
-        //    Instantiate(loot, dropPosition, transform.rotation);
-        //}
 
     }
 
