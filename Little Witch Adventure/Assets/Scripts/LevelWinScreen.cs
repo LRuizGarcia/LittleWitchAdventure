@@ -18,7 +18,7 @@ public class LevelWinScreen : MonoBehaviour
         gameObject.SetActive(true);
         if (highscore)
         {
-            scoreText.text = "NEW HIGHSCORE!\n" + score.ToString() + " GEMS FOUND";
+            scoreText.text = "NEW HIGHSCORE!\n" + "GEMS FOUND: " + score.ToString();
         }
         else scoreText.text = "GEMS FOUND: " + score.ToString();
 

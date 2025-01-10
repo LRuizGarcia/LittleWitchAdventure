@@ -16,7 +16,7 @@ public class GameOverScreen : MonoBehaviour
     public void SetUp(int score)
     {
         gameObject.SetActive(true);
-        scoreText.text = score.ToString() + " POINTS";
+        scoreText.text = "GEMS FOUND: " + score.ToString();
     }
 
     public void RestartButton()
